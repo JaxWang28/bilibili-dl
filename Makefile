@@ -25,7 +25,7 @@ lib/cjson/libcjson.a:
 	make -C ./lib
 
 clean:
-	rm -f *.o bbdl
+	rm -f  bbdl $(OBJECTS)
 	make -C ./lib clean
 
 

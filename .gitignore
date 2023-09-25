@@ -1,5 +1,7 @@
 bbdl
 cookie_file.txt
+compile_commands.json
+.cache
 # Prerequisites
 *.d
 

@@ -21,23 +21,23 @@ do {printf("%s::%s "format, __FILE__,__FUNCTION__,##__VA_ARGS__);} while(0)
 extern struct Options options;
 static size_t write_callback(void *contents, size_t size, size_t nmemb, void *stream);
 static int LoginByQrCode();
-
 static void PrintLoginStatus();
+
+
 /**
  * API to login
  *
  **/
-
 int Login(){
     switch (options.loginMethod) {
         case QRCODE:
             LoginByQrCode();
             break;
         case SMSCODE:
-            DPRINTF("login by SMScode\n");
+            printf("此功能还没有实现，可以在 issue 中催催作者.\n");
             break;
         case PASSWORD:
-            DPRINTF("login by password\n");
+            printf("此功能还没有实现，可以在 issue 中催催作者.\n");
             break;
         default:
             break;
