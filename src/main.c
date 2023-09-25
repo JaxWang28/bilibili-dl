@@ -18,6 +18,8 @@
 #include "login.h"
 #include <stdlib.h>
 #include "options.h"
+#include "cJSON.h"
+#include "download.h"
 
 #ifdef DEBUG
 #define DPRINTF(format,...) \
@@ -37,15 +39,19 @@ struct Options options = {
     .help = false,
     .loginMethod = QRCODE,
 }; 
-
+// 保存 url 数组
+cJSON *urlArr = NULL;
 
 
 static int ParasCmdOpt(int argc, char *argv[]);
 static void PrintVersion();
-
 static void PrintHelp();
 int main(int argc, char* argv[])
 {
+    urlArr = cJSON_CreateArray();
+    if (urlArr == NULL){
+        return -1;
+    }
 
     if(ParasCmdOpt(argc, argv) != 0){
         exit(1);
@@ -73,6 +79,7 @@ int main(int argc, char* argv[])
                 break;
             case DOWNLOAD:
                 printf("此功能还没有实现，可以在 issue 中催催作者.\n");
+                Download();
                 break;
             default:
                 DPRINTF("cmd: error\n");
@@ -80,10 +87,9 @@ int main(int argc, char* argv[])
         } 
         break;
     }
+    cJSON_Delete(urlArr);
     return 0;
 }
-
-
 
 static int ParasCmdOpt(int argc, char *argv[]){
     
@@ -137,7 +143,8 @@ static int ParasCmdOpt(int argc, char *argv[]){
 
         // url
         else{
-
+            cJSON *url = cJSON_CreateString(argv[0]);
+            cJSON_AddItemToArray(urlArr, url);
         }
 
         argv++;
@@ -167,6 +174,7 @@ static void PrintHelp(){
 static void PrintVersion(){
     printf(
         PROGNAME " " VERSION "\n"
+        "See more informantion https://github.com/jw-jackson/bilibili-dl.\n"
     );
 }
 

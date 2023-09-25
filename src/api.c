@@ -24,6 +24,13 @@ int main(){
 #endif
 
 
+#ifdef DEBUG
+#define DPRINTF(format,...) \
+do {printf("%s::%s "format, __FILE__,__FUNCTION__,##__VA_ARGS__);} while(0)
+#else
+#define DPRINTF
+#endif
+
 
 struct MemoryBlock{
     size_t size;
@@ -73,6 +80,7 @@ cJSON * Get(char* apiname, char *paramlist){
         url = (char*) realloc(url, strlen(url) + strlen(paramlist) + 1 + 1);
         sprintf(url, "%s?%s", url, paramlist); 
     }
+    DPRINTF("%s\n", url);
     
     struct MemoryBlock block;
     block.data = (char*)malloc(1);

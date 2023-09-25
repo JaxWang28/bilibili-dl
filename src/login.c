@@ -155,17 +155,12 @@ static void PrintLoginStatus(){
 
     if(tmpJson -> valueint == 1){
         tmpJson = cJSON_GetObjectItem(dataJson,"vipType");
-        switch (tmpJson -> valueint) {
-            case 0:
-                printf("vip类型:    无\n");
-                break;
-            case 1:
-                printf("vip类型:    月度大会员\n");
-                break;
-            case 2:
-                printf("vip类型:    年度大会员\n");
-                break;
-        }
+        char vipArr[][32] = {
+            "vip类型:    无\n",
+            "vip类型:    月度大会员\n",
+            "vip类型:    年度大会员\n"
+        };
+        printf("%s",vipArr[tmpJson -> valueint]);
     }
     else{
         printf("vip类型:    无\n");

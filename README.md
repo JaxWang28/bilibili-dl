@@ -3,11 +3,15 @@ A commandline tool to download video from bilibili.
 ```
 bilibili-dl
 |
-|-- READEME.md
-|-- Makefile
-|-- api.json
 |-- src/
 |   |-- main.c
 |   |-- api.c 
-|   |--
+|   |-- login.c
+|   
+|-- include/
+|-- lib/
+|
+|-- api.json
+|-- Makefile
+|-- READEME.md
 ```
