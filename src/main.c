@@ -16,7 +16,6 @@
 #include <stdio.h>
 #include <string.h>
 #include "login.h"
-#include "video.h"
 #include <stdlib.h>
 #include "options.h"
 #ifdef DEBUG
