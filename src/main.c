@@ -53,9 +53,15 @@ int main(int argc, char* argv[])
         return -1;
     }
 
-    if(ParasCmdOpt(argc, argv) != 0){
-        exit(1);
-    };
+    if (argc == 1){
+        options.help = true;
+    }
+    else{
+        if(ParasCmdOpt(argc, argv) != 0){
+            exit(1);
+        };
+    }
+
     while(1){
         switch (cmd) {
             case UNUSED:
