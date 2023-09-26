@@ -78,6 +78,7 @@ cJSON * Get(char* apiname, char *paramlist){
     char* url = GetApiUrl(apiname);
     if (url == NULL){
         printf("url == NULL\n");
+        exit(0);
         return NULL;
     }
     if (paramlist != NULL){
@@ -112,8 +113,11 @@ static char *GetApiUrl(char *apiname){
 
     if (apiJson == NULL){
         apiJson = cJSON_Parse(apiTable);
+        if (apiJson == NULL){
+            printf("Parse apiTable error\n");
+            exit(0);
+        }
     }
-
     cJSON *selectedApiJson = cJSON_GetObjectItem(apiJson, apiname);
     if(selectedApiJson == NULL){
         // error
