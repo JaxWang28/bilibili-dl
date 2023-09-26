@@ -39,17 +39,21 @@ struct Options options = {
     .help = false,
     .loginMethod = QRCODE,
 }; 
-// 保存 url 数组
-cJSON *urlArr = NULL;
 
+// 稿件列表
+cJSON *submissionArr = NULL;
 
+/* [{url: "", bvid:"",avid:"", title:"", pagefrom: int, pageend: int, pagelist:[], {}, {}, {}]
+*/
+
+static int ParsePageRange(char *pagerangecmd, int *pagefrom, int *pageend);
 static int ParasCmdOpt(int argc, char *argv[]);
 static void PrintVersion();
 static void PrintHelp();
 int main(int argc, char* argv[])
 {
-    urlArr = cJSON_CreateArray();
-    if (urlArr == NULL){
+    submissionArr = cJSON_CreateArray();
+    if (submissionArr == NULL){
         return -1;
     }
 
@@ -61,7 +65,6 @@ int main(int argc, char* argv[])
             exit(1);
         };
     }
-
     while(1){
         switch (cmd) {
             case UNUSED:
@@ -93,11 +96,23 @@ int main(int argc, char* argv[])
         } 
         break;
     }
-    cJSON_Delete(urlArr);
+    cJSON_Delete(submissionArr);
     return 0;
 }
 
 static int ParasCmdOpt(int argc, char *argv[]){
+    char *templateStr = "{ \
+                            \"url\": \"\"   , \
+                            \"bvid\": \"\"  , \
+                            \"avid\": \"\"  , \
+                            \"title\": \"\" , \
+                            \"pagefrom\": 0 , \
+                            \"pageend\": 0  , \
+                            \"pages\": []  \
+                            }";
+
+    cJSON *template = cJSON_Parse(templateStr);
+    //printf("%s\n",cJSON_Print(template));
     
     // argv[0] is the program name
     argc--;
@@ -133,6 +148,7 @@ static int ParasCmdOpt(int argc, char *argv[]){
                 printf(
                     "Try 'bbdl -h' for more informantion.\n"
                 );
+                cJSON_Delete(template);
                 return -1;
             }
             
@@ -149,20 +165,47 @@ static int ParasCmdOpt(int argc, char *argv[]){
 
         // url
         else{
-            cJSON *url = cJSON_CreateString(argv[0]);
-            cJSON_AddItemToArray(urlArr, url);
+            //cJSON *url = cJSON_CreateString(argv[0]);
+            cJSON *submission = cJSON_Duplicate(template, 1);
+            cJSON *url = cJSON_GetObjectItem(submission, "url");
+            cJSON_SetValuestring(url, argv[0]);
+            
+            // 是否指定 page
+            if(argc > 0 && argv[1][0] == 'p'){
+                int tmp_from, tmp_end;
+                ParsePageRange(argv[1], &tmp_from, &tmp_end);
+                cJSON *tmp = NULL;
+                tmp = cJSON_GetObjectItem(submission, "pagefrom");
+                cJSON_SetIntValue(tmp, tmp_from);
+                tmp = cJSON_GetObjectItem(submission, "pageend");
+                cJSON_SetIntValue(tmp, tmp_end);
+                argc --;
+                argv ++;
+            }
+            cJSON_AddItemToArray(submissionArr, submission);
         }
 
         argv++;
     }
-
+    cJSON_Delete(template);
     return 0;
 }
 
 
+static int ParsePageRange(char *pagerangecmd, int *pagefrom, int *pageend){
+    // 目前只支持指定一种page 如， p10
+    
+    // 去掉 p
+    char *pagerange = pagerangecmd + 1;
+
+    *pagefrom = *pageend = atoi(pagerange);
+    // 缺少错误检查
+    return 0;
+}
+
 static void PrintHelp(){
     printf(
-        "Usage: " "bbdl" " [command] [options] <URL>\n"
+        "Usage: " "bbdl" " [command] [options] <URL> [pxxx]\n"
         "\n"
         "options:\n"
         "  -v, --version        print program version\n"
