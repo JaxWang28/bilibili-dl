@@ -77,6 +77,15 @@ static int LoginByQrCode(){
     curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, write_callback); 
     curl_easy_setopt(handle, CURLOPT_WRITEDATA, &block); 
     curl_easy_perform(handle);
+    
+    // error
+    if (block.size == 1){
+        curl_easy_cleanup(handle);
+        free(block.data);
+        return -1;
+    }
+
+
 
     cJSON *responseJson = cJSON_Parse(block.data);
     free(block.data);

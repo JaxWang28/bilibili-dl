@@ -32,6 +32,10 @@ do {printf("%s::%s "format, __FILE__,__FUNCTION__,##__VA_ARGS__);} while(0)
 #endif
 
 
+
+extern char* apiTable;
+cJSON* apiJson = NULL;
+
 struct MemoryBlock{
     size_t size;
     char* data;
@@ -105,28 +109,9 @@ cJSON * Get(char* apiname, char *paramlist){
 
 
 static char *GetApiUrl(char *apiname){
-    FILE *file = fopen("api.json", "r");
-    if (file == NULL){
-        // error
-        return NULL;
-    }
-    // 确定文件大小
-    fseek(file, 0, SEEK_END);
-    long fsize = ftell(file);
-    fseek(file, 0, SEEK_SET);
-
-    // 读取文件内容
-    char *content = malloc(fsize + 1);
-    fread(content, 1, fsize, file);
-    fclose(file);
-    
-    cJSON *apiJson = cJSON_Parse(content);
-    free(content);
-    content = NULL;
 
     if (apiJson == NULL){
-        // error
-        return NULL;
+        apiJson = cJSON_Parse(apiTable);
     }
 
     cJSON *selectedApiJson = cJSON_GetObjectItem(apiJson, apiname);
