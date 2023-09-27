@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include <string.h>
 #include "api.h"
+#include <stdlib.h>
+#include <curl/curl.h>
+#include "fetchstream.h"
 
 extern cJSON *submissionArr;
 int getSubmissionInfo(cJSON *submission, char *bvid);
@@ -67,12 +70,8 @@ int getSubmissionInfo(cJSON *submission, char *bvid){
     return 0;
 }
 
+static int GetVideoStream(char *bvid,cJSON *page);
 
-
-// get cid at the same time
-int PrintVideoInfo(char *bvid){
-    return 0;
-};
 
 
 
@@ -82,8 +81,65 @@ int Download(){
     ParseSubmissionArr();
     //cJSON *bvid = cJSON_GetArrayItem(bvidArr, 0);
     //PrintVideoInfo(bvid -> valuestring);
+    int submissionArrSize = cJSON_GetArraySize(submissionArr);
+
+    for(int i = 0; i < submissionArrSize; i++){
+        cJSON *submission = cJSON_GetArrayItem(submissionArr, i);
+        cJSON *pages = cJSON_GetObjectItem(submission, "pages");
+        cJSON *bvid = cJSON_GetObjectItem(submission, "bvid");
+        int pagesSize = cJSON_GetArraySize(pages);
+        for(int j = 0; j < pagesSize; j++){
+            cJSON *page = cJSON_GetArrayItem(pages, j);
+            GetVideoStream(bvid -> valuestring, page);
+        }
+
+
+    }
+
     return 0;
 }
+
+
+
+
+
+
+
+static int GetVideoStream(char *bvid,cJSON *page){
+    printf("%s\n", cJSON_Print(page));
+    cJSON *cid = cJSON_GetObjectItem(page,"cid");
+    char *paramlist = NULL;
+    printf("%d\n", cid -> valueint);
+    char cidStr[10];
+    sprintf(cidStr, "%d", cid ->valueint);
+    paramlist = AddParam(paramlist, "fnval", "16");
+    paramlist = AddParam(paramlist, "cid", cidStr);
+    paramlist = AddParam(paramlist, "bvid", bvid);
+    printf("%s\n", paramlist);    
+    cJSON *responseJson = Get("videoStream", paramlist);
+
+    cJSON *dataJson = cJSON_GetObjectItem(responseJson, "data");
+    cJSON *dash = cJSON_GetObjectItem(dataJson, "dash");
+
+
+    cJSON *video = cJSON_GetObjectItem(dash, "video");
+
+
+
+    printf("%s\n", cJSON_Print(video));
+    cJSON *video1 = cJSON_GetArrayItem(video, 0);
+    //printf("%s\n", cJSON_Print(video1));
+    cJSON *baseUrl = cJSON_GetObjectItem(video1, "baseUrl");
+    
+    FetchStream("test1.mp4", baseUrl->valuestring);
+
+
+
+    cJSON_Delete(responseJson);
+    free(paramlist);
+    return 0;
+}
+
 
 
 
