@@ -74,8 +74,8 @@ char *AddParam(char *paramlist, char *key, char *value){
 cJSON * Get(char* apiname, char *paramlist){
     CURL *handle;
     handle = curl_easy_init();
-
-    char* url = GetApiUrl(apiname);
+    char* url = NULL;
+    url = GetApiUrl(apiname);
     if (url == NULL){
         printf("url == NULL\n");
         exit(0);
@@ -126,6 +126,5 @@ static char *GetApiUrl(char *apiname){
 
     char *url = NULL;
     url = strdup(selectedApiJson->valuestring);
-    cJSON_Delete(apiJson);
     return url;
 }
