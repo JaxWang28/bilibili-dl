@@ -17,6 +17,8 @@
 
 
 A commandline tool to download video from bilibili.
+
+# 目录结构
 ```
 bilibili-dl
 |
@@ -31,4 +33,21 @@ bilibili-dl
 |-- api.json
 |-- Makefile
 |-- READEME.md
+```
+
+# 库
+```
+|- cJSON        -- 处理 json 数据, 数据存储
+|
+|- curl         -- http 请求, fetch stream
+|
+|- Gstreamer    -- 考虑使用其 api 混流
+|
+|- FFmpeg       -- 考虑使用其 api 混流
+```
+
+
+# 音视频处理
+```
+API 使用过于复杂，目前选择调用 ffmpeg
 ```
