@@ -9,13 +9,13 @@
 *                                                                          *
 *     A commandline tool to download bilibili video.                       *
 ***************************************************************************/
-//use clap::{Parser};
+use clap::{Parser, Subcommand};
 //use url::{Url, ParseError,Host, Position};
 use url::{Url};
 use reqwest;
-use serde::Deserialize;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use std::io::{self, Write};
+use std::error::Error;
 
 
 //use std::fs;
@@ -33,14 +33,28 @@ struct Response <T>{
 }
 
 
-/*
+#[derive(Subcommand)]
+enum Commands {
+    /// login your account
+    Login { 
+        //name: Option<String> 
+    },
+    /// download video
+    Download {
+
+    }
+}
+
 #[derive(Parser)]
 #[command(author="jackson", version="0.0.1", about="A commandline program to download bilibili video.", long_about = None)]
 struct Cli {
+    /*
     /// URLs to download
     url: Vec<String>,
+    */
+    #[command(subcommand)]
+    command: Commands,
 }
-*/
 
 fn login() -> Result<(), reqwest::Error> {
     let cookie_store = reqwest_cookie_store::CookieStore::new(None);
@@ -86,7 +100,6 @@ fn login() -> Result<(), reqwest::Error> {
         }
     }
 
-
     // 解析 URL
     let mut url = Url::parse("https://passport.bilibili.com/x/passport-login/web/qrcode/poll").expect("Failed to parse URL");
 
@@ -112,6 +125,10 @@ fn login() -> Result<(), reqwest::Error> {
 
 
 
+
+
+
+/*
 fn login_test() -> Result<(), reqwest::Error> {
     // Load an existing set of cookies, serialized as json
     let cookie_store = {
@@ -150,9 +167,25 @@ fn login_test() -> Result<(), reqwest::Error> {
     Ok(())
 
 }
+*/
 
-fn main(){
-    //let cli = Cli::parse();
+fn main() -> Result<(), Box<dyn Error>> {
+    let cli = Cli::parse();
+
+
+    match &cli.command {
+        Commands::Login {} => {
+            let _ = login();
+            return Ok(());
+        }
+        Commands::Download {} => {
+            println!("download video");
+            return Ok(());
+        }
+    }
+
+
+
 
     // You can check the value provided by positional arguments, or option arguments
     /*
@@ -175,7 +208,7 @@ fn main(){
     }
     */
 
-    let _ = login();
+    //let _ = login();
     //let _ = login_test();
 
     /*
@@ -193,10 +226,6 @@ fn main(){
     assert!(issue_list_url.fragment() == None);
     assert!(!issue_list_url.cannot_be_a_base());
     */
-
-
-    
-
 }
 
 
@@ -222,15 +251,6 @@ fn print_help() {
     println!("  download             download,default");
 }
 */
-
-
-
-
-
-
-
-
-
 
 
 
