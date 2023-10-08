@@ -7,3 +7,8 @@ edition = "2021"
 
 [dependencies]
 clap = { version = "4.4.6", features = ["derive"] }
+reqwest = { version = "0.11", features = ["json","blocking", "cookies"] }
+tokio = { version = "1", features = ["full"] }
+url = "2.4.1"
+serde = { version = "1.0", features = ["derive"] }
+reqwest_cookie_store = "0.6.0"
