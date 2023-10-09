@@ -18,3 +18,19 @@
 
 A commandline program to download video from bilibili.
 
+# How to use
+```
+bilibili-dl -h print help
+
+bilibili-dl download <URL>  to download the video
+
+Example
+bilibili-dl download 'https://www.bilibili.com/video/BV1Rw411h7Zv/?spm_id_from=333.1007.tianma.1-1-1.click&vd_source=5c7fcb1d3e2bfeeeecab12c6647acacb'
+```
+
+# Plan
+* 分 p 下载
+* 多线程下载
+* 选择清晰度
+* 登录方式添加
+

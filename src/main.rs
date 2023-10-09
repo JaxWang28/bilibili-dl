@@ -18,11 +18,6 @@ use std::io::{self, Write};
 use std::error::Error;
 
 
-//use std::fs;
-//use std::collections::HashMap;
-
-
-
 
 #[derive(Deserialize, Serialize, Debug)]
 struct Response <T>{
@@ -372,7 +367,6 @@ use std::io::{Seek, SeekFrom};
 fn main() -> Result<(), Box<dyn Error>> {
     let cli = Cli::parse();
 
-
     match &cli.command {
         Commands::Login {} => {
             let _ = login();
@@ -380,8 +374,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
         Commands::Download {url} => {
             println!("download video");
-            //getVideoInfo();
-            //downloadVideo();
             download(url);
             return Ok(());
         }
