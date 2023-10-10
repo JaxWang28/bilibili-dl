@@ -13,7 +13,7 @@
         <img src="https://img.shields.io/badge/License-GPLv3-blue.svg" alt="GitHub license"/>
     </a>
 </p>
-<h3 align="center">不断更新中....</h3>
+<h3 align="center">不断学习，持续更新中....</h3>
 
 
 A commandline program to download video from bilibili.

@@ -67,7 +67,6 @@ fn login() -> Result<(), reqwest::Error> {
     let response = client.get("https://passport.bilibili.com/x/passport-login/web/qrcode/generate").send()?;
 
 
-
     #[derive(Deserialize,Serialize)]
     struct Data {
         url: String,
@@ -119,12 +118,9 @@ fn login() -> Result<(), reqwest::Error> {
 
 
 
-struct video{
-    bvid: String, 
-    cid: i32,
-}
 
 #[derive(Deserialize,Serialize, Debug)]
+#[allow(non_snake_case)]
 struct Obj {
     id:i32,
     baseUrl:String,
@@ -140,10 +136,9 @@ struct Dash {
 
 
 fn fetchstream_core(mut response: reqwest::blocking::Response, client: &reqwest::blocking::Client, name: &str) {
-    let mut size: u64 = 0;
     match response.headers().get(CONTENT_LENGTH) {
         Some(length) => {
-            size = length.to_str().unwrap().parse().unwrap();
+            let size:u32 = length.to_str().unwrap().parse().unwrap();
             println!("File size: {} bytes", size);
         }
         None => println!("Content-Length header is missing!"),
@@ -151,8 +146,6 @@ fn fetchstream_core(mut response: reqwest::blocking::Response, client: &reqwest:
 
 
     let mut file = OpenOptions::new().create(true).append(true).open(name).unwrap();
-    
-    let mut num = 0;
     let mut current_offset = file.seek(SeekFrom::Current(0)).unwrap();
     println!("Current offset: {}", current_offset);
 
@@ -160,11 +153,11 @@ fn fetchstream_core(mut response: reqwest::blocking::Response, client: &reqwest:
     loop {
         let range = format!("bytes={}-", current_offset);
         println!("{}", range);
-        let mut response = client.get(response.url().to_string()).header(RANGE, range).send().unwrap();
+        response = client.get(response.url().to_string()).header(RANGE, range).send().unwrap();
 
         let result = copy(&mut response, &mut file);
         match result {
-            Ok(value) => {
+            Ok(_value) => {
                 println!("ok");
                 break;
             },
@@ -217,7 +210,7 @@ fn fetchstream(dash:Dash) -> i32{
             None => return 0,
         }
     }
-    let mut response: reqwest::blocking::Response = response_result.unwrap();
+    let response: reqwest::blocking::Response = response_result.unwrap();
     fetchstream_core(response, &client, "file.mp4");
 
     let mut response_result: Option<reqwest::blocking::Response> = None;
@@ -235,7 +228,7 @@ fn fetchstream(dash:Dash) -> i32{
             None => return 0,
         }
     }
-    let mut response: reqwest::blocking::Response = response_result.unwrap();
+    let response: reqwest::blocking::Response = response_result.unwrap();
     fetchstream_core(response, &client, "file.mp3");
     0
 }
@@ -244,7 +237,7 @@ fn download(url: &String){
     let dash = getstream(url);
     //println!("{:#?}",dash);
     fetchstream(dash);
-    let result = mix_audio_video("file.mp4", "file.mp3", "outputfile.mp4");
+    let _result = mix_audio_video("file.mp4", "file.mp3", "outputfile.mp4");
 }
 
 
@@ -276,7 +269,7 @@ fn mix_audio_video(video_path: &str, audio_path: &str, output_path: &str) -> std
 }
 
 fn getstream(url: &String) -> Dash{
-    let mut url = Url::parse(url).expect("Failed to parse URL");
+    let url = Url::parse(url).expect("Failed to parse URL");
 
     let prefix = "/video/";
     let suffix = "/";
@@ -357,7 +350,6 @@ mod tests {
         getVideoInfo();
     }
 }
-use std::fs::File;
 use std::io::copy;
 use reqwest::header::CONTENT_LENGTH;
 use reqwest::header::RANGE;
@@ -378,59 +370,10 @@ fn main() -> Result<(), Box<dyn Error>> {
             return Ok(());
         }
     }
-
-
-
-
-    // You can check the value provided by positional arguments, or option arguments
-    /*
-    if let Some(name) = cli.name.as_deref() {
-        println!("Value for name: {name}");
-    }
-
-    if let Some(config_path) = cli.config.as_deref() {
-        println!("Value for config: {}", config_path.display());
-    }
-    */
-
-    //assert!(Url::parse("http://[:asdfas::1]") == Err(ParseError::InvalidIpv6Address));
-    /*
-    println!("url: {:?}", cli.url);
-    for item in &cli.url {
-        println!("{:?}", item);
-        let issue_list_url = Url::parse(item);
-        println!("{:?}", issue_list_url);
-    }
-    */
-
-    //let _ = login();
-    //let _ = login_test();
-
-    /*
-    assert!(issue_list_url.scheme() == "https");
-    assert!(issue_list_url.username() == "");
-    assert!(issue_list_url.password() == None);
-    assert!(issue_list_url.host_str() == Some("github.com"));
-    assert!(issue_list_url.host() == Some(Host::Domain("github.com")));
-    assert!(issue_list_url.port() == None);
-    assert!(issue_list_url.path() == "/rust-lang/rust/issues");
-    assert!(issue_list_url.path_segments().map(|c| c.collect::<Vec<_>>()) ==
-            Some(vec!["rust-lang", "rust", "issues"]));
-    assert!(issue_list_url.query() == Some("labels=E-easy&state=open"));
-    assert!(&issue_list_url[Position::BeforePath..] == "/rust-lang/rust/issues?labels=E-easy&state=open");
-    assert!(issue_list_url.fragment() == None);
-    assert!(!issue_list_url.cannot_be_a_base());
-    */
 }
 
 
 /*
-fn main() {
-
-    print_help();
-}
-
-
 fn print_help() {
     println!("Usage:\tbbdl [command] [options] <URL> [pxxx]");
     println!("");
@@ -446,33 +389,6 @@ fn print_help() {
     println!("  download             download,default");
 }
 */
-
-
-
-/*
-
-    //save_cookies_to_file(&response, "./cookies.txt");
-    //let theheader = response.headers();
-    //println!("{:#?}", theheader);
-    //let cookies = theheader.get_all("set-cookie");
-
-    //println!("{:#?}",cookies);
-
-
-    /*
-    let mut iter = cookies.iter();
-    loop {
-        println!("{:#?}", iter.next().unwrap());
-        if iter.next().is_none() {
-            break;
-        }
-    }
-    */
-    //let body = response.text();
-    //println!("{:#?}", body);
-
-*/
-
 
 
 /*
