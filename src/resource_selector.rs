@@ -2,6 +2,8 @@
 
 
 
-pub async fn init_res_selector() {
-
+use tokio::sync::mpsc;
+pub async fn init_res_selector(mut rx: mpsc::Receiver<i32>) {
+    while let Some(x) = rx.recv().await {
+    }
 }

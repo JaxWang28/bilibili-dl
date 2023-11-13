@@ -2,6 +2,11 @@ use tokio::sync::oneshot;
 use tokio::sync::mpsc;
 
 use clap::{Parser, Subcommand};
+use tokio::task::JoinSet;
+
+
+
+
 
 mod object_parser;
 use object_parser::init_object_parser;
@@ -93,13 +98,17 @@ async fn download(object: Vec<String>/* */) {
     /* url parser should start after others ?*/
     //let testv = vec!["hi".to_string(), "hello".to_string(), "jackson".to_string()];
     let object_parser = init_object_parser(Object::Url(object),0, 0, tx_object_parser);
-    let res_selector = init_res_selector();
+    let res_selector = init_res_selector(rx_res_selector);
     let downloader = init_downloader();
     let multimedia_processor = init_multimedia_processor();
 
+    let mut set = JoinSet::new();
+
     /* start */
-    tokio::spawn(object_parser);
-    tokio::spawn(res_selector);
-    tokio::spawn(downloader);
-    tokio::spawn(multimedia_processor);
+    set.spawn(object_parser);
+    set.spawn(res_selector);
+    set.spawn(downloader);
+    set.spawn(multimedia_processor);
+
+    while let Some(_) = set.join_next().await {}
 }
