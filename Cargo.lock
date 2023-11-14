@@ -97,6 +97,7 @@ name = "bilibili-dl"
 version = "0.0.0"
 dependencies = [
  "clap",
+ "lazy_static",
  "reqwest",
  "reqwest_cookie_store",
  "serde",
