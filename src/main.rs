@@ -3,7 +3,9 @@ use tokio::sync::mpsc;
 
 use clap::{Parser, Subcommand};
 use tokio::task::JoinSet;
+use std::sync::{Arc, Mutex};
 
+use reqwest::Client;
 
 
 
@@ -83,21 +85,25 @@ async fn main(){
 
 
 
-
 /* default download command. */
 async fn download(object: Vec<String>/* */) {
+
+    /* create client */
+    let client = Arc::new(Mutex::new(Client::new()));
+    /* TODO: init client */
+
+
     /* create channel. */
     let (tx_object_parser, rx_res_selector) = mpsc::channel::<i32>(16);
-
     /*
     let (tx_res_selector, rx_downloader) = oneshot::channel::<i32>();
     let (tx_downloader, rx_media_processor) = oneshot::channel::<i32>();
     */
     
+
     /* TODO: init */
     /* url parser should start after others ?*/
-    //let testv = vec!["hi".to_string(), "hello".to_string(), "jackson".to_string()];
-    let object_parser = init_object_parser(Object::Url(object),0, 0, tx_object_parser);
+    let object_parser = init_object_parser(&client, Object::Url(object),0, 0, tx_object_parser);
     let res_selector = init_res_selector(rx_res_selector);
     let downloader = init_downloader();
     let multimedia_processor = init_multimedia_processor();

@@ -1,11 +1,12 @@
-
+use futures::future;
 use tokio::sync::oneshot;
 
 use tokio::sync::mpsc;
 use url::{Url};
 
-
+use reqwest::Client;
 use tokio::task::JoinSet;
+use std::sync::{Arc, Mutex};
 pub enum Object{
     Url(Vec<String>),
     Bvid,
@@ -17,7 +18,7 @@ pub enum Object{
 
 /* start url parser */
 /* way: bid vid ? ....*/
-pub async fn init_object_parser(object: Object, page_start: u8, page_end: u8, tx: mpsc::Sender<i32>){
+pub async fn init_object_parser(client: &Client, object: Object, page_start: u8, page_end: u8, tx: mpsc::Sender<i32>){
     match object {
         Object::Url(urls) => {
             let mut set = JoinSet::new();
@@ -77,7 +78,24 @@ async fn url_parser(url: String, mut page_start: u8, mut page_end: u8, tx: mpsc:
             page_end = 1;
         }
     }
+    let client = Client::new();
+    /*
+    let urls = vec!["https://www.baidu.com", "https://www.sougou.com"];
+    let bodies = future::join_all(urls.into_iter().map(|url| {
+        let client = &client;
+        async move {
+            let resp = client.get(url).send().await?;
+            resp.bytes().await
+        }
+    })).await;
+    */
 
+
+
+
+
+
+    println!("{}", page_end);
 }
 
 
