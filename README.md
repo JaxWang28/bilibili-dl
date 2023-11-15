@@ -45,6 +45,7 @@ bilibili-dl download 'https://www.bilibili.com/video/BV1Rw411h7Zv/?spm_id_from=3
 
 
 # 框架
+![bilibili-dl](https://github.com/jw-jackson/bilibili-dl/assets/52764058/5fac41e7-30c4-4359-b491-fb2342b59457)
 
 
 
