@@ -33,4 +33,37 @@ bilibili-dl download 'https://www.bilibili.com/video/BV1Rw411h7Zv/?spm_id_from=3
 * 多线程下载
 * 选择清晰度
 * 登录方式添加
+* cookies 有效检查
+
+
+
+
+# notes
+* 可以考虑使用 enum 在 channel 传递，以来区分不同数据类型
+
+
+
+
+# 框架
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

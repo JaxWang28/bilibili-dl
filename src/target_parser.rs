@@ -6,7 +6,6 @@ use serde::Serialize;
 use serde::Deserialize;
 
 
-
 use reqwest::Client;
 use tokio::task::JoinSet;
 use std::sync::{Arc, Mutex};
@@ -150,8 +149,6 @@ async fn url_parser(client: &Client,url: String, mut page_start: u8, mut page_en
 
 
 
-
-
     /*
     let urls = vec!["https://www.baidu.com", "https://www.sougou.com"];
     let bodies = future::join_all(urls.into_iter().map(|url| {
@@ -167,10 +164,8 @@ async fn url_parser(client: &Client,url: String, mut page_start: u8, mut page_en
 
 
 
-
     println!("{}", page_end);
 }
-
 
 async fn get_bvid(url: String) {
 

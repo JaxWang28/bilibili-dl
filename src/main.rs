@@ -1,32 +1,31 @@
+/***************************************************************************
+*                                                                          *
+*     Project                 ____  ____  ____  _                          *
+*                            | __ )| __ )|  _ \| |                         *
+*                            |  _ \|  _ \| | | | |                         *
+*                            | |_) | |_) | |_| | |___                      *
+*                            |____/|____/|____/|_____|                     *
+*                                                                          *
+*                                                                          *
+*     A commandline tool to download bilibili video.                       *
+***************************************************************************/
 use tokio::sync::oneshot;
 use tokio::sync::mpsc;
-
 use clap::{Parser, Subcommand};
 use tokio::task::JoinSet;
 use std::sync::{Arc, Mutex};
-
 use std::io::{self, Write};
 use reqwest::Client;
 use reqwest;
 use serde::Deserialize;
 use serde::Serialize;
-
 use url::{Url};
 use lazy_static::lazy_static;
 
-
 lazy_static! {
     static ref GLOBAL_CLIENT: Client = {
-        /*
-        let cookie_store = reqwest_cookie_store::CookieStore::new(None);
-        let cookie_store = reqwest_cookie_store::CookieStoreMutex::new(cookie_store);
-        let cookie_store = std::sync::Arc::new(cookie_store);
-        reqwest::Client::builder()
-        .cookie_provider(std::sync::Arc::clone(&cookie_store))
-        .build()
-        .unwrap()
-        */
         let cookie_store = {
+            /* TODO: cookie path */
             if let Ok(file) = std::fs::File::open("cookies.json").map(std::io::BufReader::new)
             {
               // use re-exported version of `CookieStore` for crate compatibility
@@ -45,89 +44,38 @@ lazy_static! {
         .build()
         .unwrap()
     };
-
-
-    /*
-    // Build a `reqwest` Client, providing the deserialized store
-    static ref GLOBAL_CLIENT: Client =     */
 }
 
 
-
-mod object_parser;
-use object_parser::init_object_parser;
-use object_parser::Object;
+mod target_parser;
+use target_parser::init_object_parser;
+use target_parser::Object;
 mod resource_selector;
 use resource_selector::init_res_selector;
 mod downloader;
 use downloader::init_downloader;
 mod multimedia_processor;
 use multimedia_processor::init_multimedia_processor;
-
-
-
-#[derive(Subcommand)]
-enum Commands {
-    /* TODO */
-    /// login your account
-    login { 
-
-    },
-
-    /* TODO */
-    /// just show video info
-    showinfo {
-
-    }
-}
-
-#[derive(Parser)]
-#[command(author="jackson", version="0.0.1", about="A commandline program to download bilibili video.", long_about = None)]
-struct Cli {
-    /* TODO: change to set */
-    /* TODO: should change the url to others */
-    object: Vec<String>,
-
-    /* TODO: args */
-
-    /* v
-     * a
-     * d
-     * s
-     * c */
-    /*
-    #[arg(short, long)]
-    choose:String,
-    */
-
-
-
-    #[command(subcommand)]
-    command: Option<Commands>,
-}
+mod command_parser;
+use command_parser::Cli;
+use command_parser::Commands;
+use command_parser::parse_command;
 
 
 //static client: Client;
-
 #[tokio::main]
 async fn main(){
-    let cli = Cli::parse();
-     match &cli.command {
-        Some(Commands::login{ /*list */}) => {
-            login().await;
-
-        }
-        Some(Commands::showinfo{ /*list */}) => {
-
-        }
-        None => {
-            //let url = cli.url;
-            download(cli.object).await;
-
-        }
-    }
+    let (targets, startconfig) = parse_command();
+    start(targets, startconfig).await;
 }
 
+
+
+mod data_model;
+use data_model::StartConfig;
+async fn start(targets: Vec<String>, startconfig: StartConfig) {
+    todo!();
+}
 
 
 /* default download command. */
@@ -229,3 +177,4 @@ async fn login() {
       store.save_json(&mut writer).unwrap();
     }
 }
+
