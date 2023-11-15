@@ -1,3 +1,14 @@
-pub async fn init_multimedia_processor() {
+pub struct MultimediaProcessor {
 
+}
+
+impl MultimediaProcessor {
+    pub fn new() -> MultimediaProcessor {
+        MultimediaProcessor {
+
+        }
+    }
+    pub async fn start(self) {
+        todo!();
+    }
 }

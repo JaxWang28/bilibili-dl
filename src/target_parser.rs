@@ -1,25 +1,42 @@
-use tokio::sync::oneshot;
-use tokio::sync::mpsc;
-use url::{Url};
-use serde::Serialize;
+//use tokio::sync::mpsc;
+//use url::{Url};
+//use serde::Serialize;
 //use reqwest::Response;
-use serde::Deserialize;
+//use serde::Deserialize;
 
 
-use reqwest::Client;
-use tokio::task::JoinSet;
-use std::sync::{Arc, Mutex};
-pub enum Object{
+//use reqwest::Client;
+//use tokio::task::JoinSet;
+
+
+/*
+pub enum Target {
     Url(Vec<String>),
-    Bvid,
 }
+*/
+
+
+pub struct TargetParser{
+
+}
+
+
+impl TargetParser {
+    pub fn new () -> TargetParser{
+        TargetParser {}
+    }
+    pub async fn start(self, _urls: Vec<String>) {
+        todo!();
+    }
+}
+
 
 // https://www.bilibili.com/video/BV1X94y137HR/?spm_id_from=333.1007.tianma.2-1-4.click
 // https://www.bilibili.com/video/BV1Eb411u7Fw?p=5
 
-
 /* start url parser */
 /* way: bid vid ? ....*/
+/*
 pub async fn init_object_parser(client: &'static Client,object: Object, page_start: u8, page_end: u8, tx: mpsc::Sender<i32>){
     match object {
         Object::Url(urls) => {
@@ -171,5 +188,5 @@ async fn get_bvid(url: String) {
 
     todo!();
 }
-
+*/
 

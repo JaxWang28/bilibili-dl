@@ -1,9 +1,15 @@
 /* 资源选择器 选择下载的资源 */
 
+pub struct ResourceSelector {
 
+}
 
-use tokio::sync::mpsc;
-pub async fn init_res_selector(mut rx: mpsc::Receiver<i32>) {
-    while let Some(x) = rx.recv().await {
+impl ResourceSelector {
+    pub fn new() -> ResourceSelector {
+        ResourceSelector{
+        }
+    }
+    pub async fn start(self) {
+        todo!();
     }
 }
