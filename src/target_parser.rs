@@ -1,3 +1,4 @@
+use reqwest::Client;
 //use tokio::sync::mpsc;
 //use url::{Url};
 //use serde::Serialize;
@@ -5,7 +6,6 @@
 //use serde::Deserialize;
 
 
-//use reqwest::Client;
 //use tokio::task::JoinSet;
 
 
@@ -16,14 +16,17 @@ pub enum Target {
 */
 
 
-pub struct TargetParser{
+pub struct TargetParser<'a>{
+    client: &'a Client,
 
 }
 
 
-impl TargetParser {
-    pub fn new () -> TargetParser{
-        TargetParser {}
+impl<'a> TargetParser<'a> {
+    pub fn new (client: &Client) -> TargetParser{
+        TargetParser {
+            client,
+        }
     }
     pub async fn start(self, _urls: Vec<String>) {
         todo!();

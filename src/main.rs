@@ -58,7 +58,7 @@ lazy_static! {
 
 #[tokio::main]
 async fn main(){
-    let target_parser = TargetParser::new();
+    let target_parser = TargetParser::new(&GLOBAL_CLIENT);
     let resource_selector = ResourceSelector::new();
     let downloader = Downloader::new();
     let multimedia_processor = MultimediaProcessor::new();

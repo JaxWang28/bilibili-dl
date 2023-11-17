@@ -47,7 +47,7 @@ use crate::target_parser::TargetParser;
 use crate::resource_selector::ResourceSelector;
 use crate::downloader::Downloader;
 use crate::multimedia_processor::MultimediaProcessor;
-pub async fn parse_command(_target_parser: &TargetParser,
+pub async fn parse_command<'a>(_target_parser: &'a TargetParser<'a>,
                      _resource_selector: &ResourceSelector,
                      _downloader: &Downloader,
                      _multimedia_processor: &MultimediaProcessor) -> Option<Vec<String>>{
