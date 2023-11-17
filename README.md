@@ -49,6 +49,10 @@ bilibili-dl download 'https://www.bilibili.com/video/BV1Rw411h7Zv/?spm_id_from=3
 
 
 
+# 可以做什么
+* 视频/音频/字幕/弹幕/封面下载
+* 直播视频流下载 
+* 收藏夹内容下载
 
 
 

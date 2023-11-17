@@ -19,13 +19,14 @@ mod resource_selector;
 mod downloader;
 mod multimedia_processor;
 mod command_parser;
-use command_parser::parse_command;
+use command_parser::CommandParser;
 mod data_model;
 use crate::data_model::Undefined;
 use crate::target_parser::TargetParser;
 use crate::resource_selector::ResourceSelector;
 use crate::downloader::Downloader;
 use crate::multimedia_processor::MultimediaProcessor;
+use crate::target_parser::Target;
 
 
 
@@ -58,25 +59,28 @@ lazy_static! {
 
 #[tokio::main]
 async fn main(){
-    let target_parser = TargetParser::new(&GLOBAL_CLIENT);
+
+    let (c2t_tx, tfc_rx) = mpsc::channel::<Target>(16);
+    let command_parser = CommandParser::new(c2t_tx);
+    let target_parser = TargetParser::new(&GLOBAL_CLIENT, tfc_rx);
+    /*
     let resource_selector = ResourceSelector::new();
     let downloader = Downloader::new();
     let multimedia_processor = MultimediaProcessor::new();
+    */
 
-    if let Some(targets) = parse_command(&target_parser, &resource_selector, &downloader,  &multimedia_processor).await{
-        /* TODO: channel create and set */
-       
-        let (_tx, _rx) = mpsc::channel::<Undefined>(16);
 
-        /* start */
-        let mut set = JoinSet::new();
-        set.spawn(target_parser.start(targets));
-        set.spawn(resource_selector.start());
-        set.spawn(downloader.start());
-        set.spawn(multimedia_processor.start());
-        while let Some(_) = set.join_next().await {}
-        println!("main() finished");
-    }
+    /* start */
+    let mut set = JoinSet::new();
+    set.spawn(command_parser.start());
+    set.spawn(target_parser.start());
+    /*
+    set.spawn(resource_selector.start());
+    set.spawn(downloader.start());
+    set.spawn(multimedia_processor.start());
+    */
+    while let Some(_) = set.join_next().await {}
+    println!("main() finished");
 }
 
 

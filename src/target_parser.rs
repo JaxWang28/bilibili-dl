@@ -1,5 +1,5 @@
 use reqwest::Client;
-//use tokio::sync::mpsc;
+use tokio::sync::mpsc;
 //use url::{Url};
 //use serde::Serialize;
 //use reqwest::Response;
@@ -9,26 +9,47 @@ use reqwest::Client;
 //use tokio::task::JoinSet;
 
 
-/*
-pub enum Target {
-    Url(Vec<String>),
+
+
+
+#[derive(Debug)]
+pub struct Video{
+    pub aid: Option<String>,
+    pub bvid: Option<String>,
+    pub flags: Option<u8>,
+    pub title: Option<String>,
+    pub page_range: Option<(u8, u8)>,
 }
-*/
+
+
+#[derive(Debug)]
+pub enum Target {
+    /* 普通视频 */
+    VIDEO(Video),
+    /* 直播 */
+    LIVE,
+}
 
 
 pub struct TargetParser<'a>{
     client: &'a Client,
+    receiver: mpsc::Receiver<Target>,
 
 }
 
 
 impl<'a> TargetParser<'a> {
-    pub fn new (client: &Client) -> TargetParser{
+    pub fn new (client: &Client, receiver: mpsc::Receiver<Target>) -> TargetParser{
         TargetParser {
             client,
+            receiver,
         }
     }
-    pub async fn start(self, _urls: Vec<String>) {
+    pub async fn start(mut self) {
+        while let Some(target) = self.receiver.recv().await {
+            println!("{:?}", target);
+        }
+
         todo!();
     }
 }

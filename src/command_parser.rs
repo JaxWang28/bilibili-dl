@@ -3,16 +3,19 @@ use serde::Deserialize;
 use serde::Serialize;
 use std::io::{self, Write};
 use url::Url;
+use tokio::{task, sync::mpsc};
 
 /* myself */
 use crate::data_model;
+use crate::target_parser::Target;
+use crate::target_parser::Video;
 
 #[derive(Parser)]
 #[command(author="jackson", version="0.0.1", about="A commandline program to download bilibili video.", long_about = None)]
 pub struct Cli {
     /* TODO: change to set */
     /* TODO: should change the url to others */
-    pub url: Vec<String>,
+    pub targets: Vec<String>,
 
     /* TODO: args */
 
@@ -43,29 +46,57 @@ pub enum Commands {
 }
 
 
-use crate::target_parser::TargetParser;
-use crate::resource_selector::ResourceSelector;
-use crate::downloader::Downloader;
-use crate::multimedia_processor::MultimediaProcessor;
-pub async fn parse_command<'a>(_target_parser: &'a TargetParser<'a>,
-                     _resource_selector: &ResourceSelector,
-                     _downloader: &Downloader,
-                     _multimedia_processor: &MultimediaProcessor) -> Option<Vec<String>>{
-    let cli = Cli::parse();
-    match &cli.command {
-        Some(Commands::Login{ /*list */}) => {
-            login().await;
-            None
+
+
+pub struct CommandParser{
+    sender: mpsc::Sender<Target>,
+
+}
+
+
+impl CommandParser {
+    pub fn new (sender: mpsc::Sender<Target>) -> CommandParser{
+        CommandParser {
+            sender,
         }
-        Some(Commands::ShowInfo{ /*list */}) => {
-            todo!();
-        }
-        None => {
-            Some(cli.url)
+    }
+    pub async fn start(self) {
+        let cli = Cli::parse();
+        match &cli.command {
+            Some(Commands::Login{ /*list */}) => {
+                login().await;
+            }
+            Some(Commands::ShowInfo{ /*list */}) => {
+                todo!();
+            }
+            None => {
+                download(self.sender, cli.targets).await;
+                //Some(cli.targets);
+            }
+
         }
     }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+use crate::target_parser::TargetParser;
+use crate::resource_selector::ResourceSelector;
+use crate::downloader::Downloader;
+use crate::multimedia_processor::MultimediaProcessor;
 
 
 
@@ -127,3 +158,26 @@ async fn login() {
       store.save_json(&mut writer).unwrap();
     }
 }
+
+
+
+async fn download(sender: mpsc::Sender<Target>, targets: Vec<String> /* others */) {
+    for target in targets {
+        task::spawn(preproc_target(sender.clone(), target));
+    }
+}
+
+async fn preproc_target(sender: mpsc::Sender<Target>, target: String /* others */){
+    /* TODO: */
+    sender.send(Target::VIDEO(
+            Video {
+                aid: None,
+                bvid: Some(target), 
+                flags: None,
+                title: None,
+                page_range: None
+            })).await.unwrap();
+}
+
+
+
