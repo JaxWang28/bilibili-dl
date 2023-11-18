@@ -173,9 +173,12 @@ async fn preproc_target(sender: mpsc::Sender<Target>, target: String /* others *
             Video {
                 aid: None,
                 bvid: Some(target), 
+                cid: None,
                 flags: None,
                 title: None,
-                page_range: None
+                page_range: (1, 1),
+                page_id: None,
+
             })).await.unwrap();
 }
 

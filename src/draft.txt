@@ -1,0 +1,32 @@
+match response.headers().get(CONTENT_LENGTH) {
+    Some(length) => {
+        let size:u32 = length.to_str().unwrap().parse().unwrap();
+        println!("File size: {} bytes", size);
+    }
+    None => println!("Content-Length header is missing!"),
+}
+let mut file = OpenOptions::new().create(true).append(true).open(filename).unwrap();
+let mut current_offset = file.seek(SeekFrom::Current(0)).unwrap();
+println!("Current offset: {}", current_offset);
+
+let new_client = reqwest::blocking::Client::new();
+
+loop {
+    let range = format!("bytes={}-", current_offset);
+    println!("{}", range);
+    let mut new_response = new_client.get(response.url().to_string()).header(RANGE, range).send().unwrap();
+
+    let result = copy(&mut new_response, &mut file);
+    match result {
+        Ok(_value) => {
+            println!("ok");
+            break;
+        },
+        Err(err) => {
+            println!("error: {:#?}", err);
+            // handle the error case
+        },
+    }
+    current_offset = file.seek(SeekFrom::Current(0)).unwrap();
+    println!("Current offset: {}", current_offset);
+}

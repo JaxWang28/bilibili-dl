@@ -1,13 +1,15 @@
 use reqwest::Client;
 use tokio::sync::mpsc;
-//use url::{Url};
-//use serde::Serialize;
-//use reqwest::Response;
-//use serde::Deserialize;
+use url::{Url};
+use serde::Serialize;
+use reqwest::Response;
+use serde::Deserialize;
 
 
-//use tokio::task::JoinSet;
-
+use tokio::task::JoinSet;
+use tokio::task; 
+use crate::Target::VIDEO;
+use crate::Target::LIVE;
 
 
 
@@ -16,10 +18,14 @@ use tokio::sync::mpsc;
 pub struct Video{
     pub aid: Option<String>,
     pub bvid: Option<String>,
+    pub cid: Option<String>,
     pub flags: Option<u8>,
     pub title: Option<String>,
-    pub page_range: Option<(u8, u8)>,
+    pub page_range: (usize, usize),
+    pub page_id :Option<u8>,
 }
+
+
 
 
 #[derive(Debug)]
@@ -31,28 +37,113 @@ pub enum Target {
 }
 
 
-pub struct TargetParser<'a>{
-    client: &'a Client,
-    receiver: mpsc::Receiver<Target>,
 
+
+pub struct TargetParser{
+    client: &'static Client,
+    receiver: mpsc::Receiver<Target>,
+    sender: mpsc::Sender<Video>,
 }
 
 
-impl<'a> TargetParser<'a> {
-    pub fn new (client: &Client, receiver: mpsc::Receiver<Target>) -> TargetParser{
+impl TargetParser {
+    pub fn new(client: &'static Client, receiver: mpsc::Receiver<Target>, sender: mpsc::Sender<Video>) -> TargetParser{
         TargetParser {
             client,
             receiver,
+            sender
         }
     }
     pub async fn start(mut self) {
+        let mut set = JoinSet::new();
         while let Some(target) = self.receiver.recv().await {
-            println!("{:?}", target);
-        }
+            set.spawn(target_parse(self.client, target, self.sender.clone()));
+            //target_parse(self.client, target).await;
 
-        todo!();
+        }
+        while let Some(_) = set.join_next().await {}
     }
 }
+
+
+
+
+async fn target_parse(client: &Client, target: Target, sender: mpsc::Sender<Video>) {
+    match target {
+        VIDEO(video) => {
+            proc_video(client, video, sender).await;
+        },
+        LIVE => {
+            proc_live();
+        }
+    }
+    //println!("{:?}", target);
+}
+
+
+
+
+async fn proc_video(client: &Client, mut video:Video, sender: mpsc::Sender<Video>) {
+    let mut url = Url::parse("https://api.bilibili.com/x/web-interface/view").expect("Failed to parse URL");
+
+    if let Some(ref bvid) = video.bvid {
+        url.query_pairs_mut()
+            .append_pair("bvid", bvid);
+    }
+    let response = client.get(&url.to_string()).send().await.unwrap();
+    //println!("{:?}", response);
+
+    #[derive(Deserialize, Serialize, Debug)]
+    struct Response <T>{
+        code: i32,
+        message: String,
+        ttl: i32,
+        data: T,
+    }
+    #[derive(Deserialize,Serialize, Debug)]
+    struct Page {
+        cid: i32,
+    }
+    #[derive(Deserialize,Serialize, Debug)]
+    struct Data {
+        bvid: String,
+        videos: i32,
+        title: String,
+        cid: i32,
+        pages: Vec<Page>,
+    }
+    let response:Response<Data>= response.json().await.unwrap();
+    //println!("{:#?}", response.data);
+    /*
+    let mut page_start: u8;
+    let mut page_end: u8;
+    if let Some((page_start, page_end)) = video.page_range {}
+    else {
+        
+    }
+    */
+
+    //video.title = Some(response.data.title);
+    let (page_start, page_end) = video.page_range;
+    if page_start == page_end {
+        video.title = Some(response.data.title);
+        video.cid = Some(response.data.pages[page_start - 1].cid.to_string());
+        sender.send(video).await.unwrap();
+    }
+    else {
+        for i in page_start..=page_end {
+            todo!();
+        }
+    }
+}
+
+
+fn proc_live(){
+    todo!();
+}
+
+
+
 
 
 // https://www.bilibili.com/video/BV1X94y137HR/?spm_id_from=333.1007.tianma.2-1-4.click
@@ -79,6 +170,9 @@ pub async fn init_object_parser(client: &'static Client,object: Object, page_sta
     /* 必须释放，否则 res_selector 会一直阻塞 */
     //drop(tx);
 }
+
+
+
 
 
 struct bctp {
