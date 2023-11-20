@@ -36,6 +36,7 @@ impl ResourceSelector {
 use serde_json::Value;
 async fn select(client: &Client, video: Video, sender: mpsc::Sender<(reqwest::Response, reqwest::Response, String)>) {
     println!("select");
+    /* 该 url 不知为何不可用 */
     //let mut url = Url::parse("https://api.bilibili.com/x/player/wbi/playurl").expect("Failed to parse URL");
     let mut url = Url::parse("https://api.bilibili.com/x/player/playurl").expect("Failed to parse URL");
     if let Some(ref bvid) = video.bvid {
@@ -48,9 +49,7 @@ async fn select(client: &Client, video: Video, sender: mpsc::Sender<(reqwest::Re
     }
     url.query_pairs_mut()
         .append_pair("fnval", "16");
-    //println!("{}",url.to_string());
     let response = client.get(&url.to_string()).send().await.unwrap();
-    //println!("{:?}", response);
     #[derive(Deserialize, Serialize, Debug)]
     struct Response <T>{
         code: i32,
@@ -65,13 +64,10 @@ async fn select(client: &Client, video: Video, sender: mpsc::Sender<(reqwest::Re
     }
     #[derive(Deserialize,Serialize, Debug)]
     struct Data {
-        //from: String
         accept_description: Vec<String>,
         dash:Dash,
     }
     let response:Response<Data>= response.json().await.unwrap();
-    //
-    //let json: Value = response.json().await.unwrap();
     println!("{:#?}",response);
 
     let get_video_url = select_url(client, response.data.dash.video);

@@ -4,46 +4,13 @@ use serde::Serialize;
 use std::io::{self, Write};
 use url::Url;
 use tokio::{task, sync::mpsc};
-
-/* myself */
 use crate::data_model;
 use crate::target_parser::Target;
 use crate::target_parser::Video;
-
-#[derive(Parser)]
-#[command(author="jackson", version="0.0.1", about="A commandline program to download bilibili video.", long_about = None)]
-pub struct Cli {
-    /* TODO: change to set */
-    /* TODO: should change the url to others */
-    pub targets: Vec<String>,
-
-    /* TODO: args */
-
-    /*
-    #[arg(short, long)]
-    choose:String,
-    */
-
-
-    #[command(subcommand)]
-    pub command: Option<Commands>,
-}
-
-
-#[derive(Subcommand)]
-pub enum Commands {
-    /* TODO */
-    /// login your account
-    Login { 
-
-    },
-
-    /* TODO */
-    /// just show video info
-    ShowInfo {
-
-    }
-}
+use crate::target_parser::TargetParser;
+use crate::resource_selector::ResourceSelector;
+use crate::downloader::Downloader;
+use crate::multimedia_processor::MultimediaProcessor;
 
 
 
@@ -52,7 +19,6 @@ pub struct CommandParser{
     sender: mpsc::Sender<Target>,
 
 }
-
 
 impl CommandParser {
     pub fn new (sender: mpsc::Sender<Target>) -> CommandParser{
@@ -78,27 +44,38 @@ impl CommandParser {
     }
 }
 
+#[derive(Parser)]
+#[command(author="jackson", version="0.0.1", about="A commandline program to download bilibili video.", long_about = None)]
+pub struct Cli {
+    /* TODO: change to set */
+    /* TODO: should change the url to others */
+    pub targets: Vec<String>,
 
+    /* TODO: args */
 
+    /*
+    #[arg(short, long)]
+    choose:String,
+    */
 
+    #[command(subcommand)]
+    pub command: Option<Commands>,
+}
 
+#[derive(Subcommand)]
+pub enum Commands {
+    /* TODO */
+    /// login your account
+    Login { 
 
+    },
 
+    /* TODO */
+    /// just show video info
+    ShowInfo {
 
-
-
-
-
-
-
-
-
-use crate::target_parser::TargetParser;
-use crate::resource_selector::ResourceSelector;
-use crate::downloader::Downloader;
-use crate::multimedia_processor::MultimediaProcessor;
-
-
+    }
+}
 
 /* TODO: 优化*/
 async fn login() {
@@ -158,7 +135,6 @@ async fn login() {
       store.save_json(&mut writer).unwrap();
     }
 }
-
 
 
 async fn download(sender: mpsc::Sender<Target>, targets: Vec<String> /* others */) {

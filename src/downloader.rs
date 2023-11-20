@@ -53,15 +53,6 @@ impl Downloader {
     }
 }
 
-
-
-/*
-async fn download(client: &Client, mut response: reqwest::Response, filename: String) {
-
-}
-*/
-
-
 async fn download(client: &Client, mut response: reqwest::Response, filename: String) {
     let response = client.get(response.url().to_string())
         .header(header::REFERER, "https://www.bilibili.com")
