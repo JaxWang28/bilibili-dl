@@ -9,8 +9,6 @@ use tokio::task;
 use crate::Target::VIDEO;
 use crate::Target::LIVE;
 
-
-
 #[derive(Debug)]
 pub struct Video{
     pub aid: Option<String>,
@@ -22,9 +20,6 @@ pub struct Video{
     pub page_id :Option<u8>,
 }
 
-
-
-
 #[derive(Debug)]
 pub enum Target {
     /* 普通视频 */
@@ -32,9 +27,6 @@ pub enum Target {
     /* 直播 */
     LIVE,
 }
-
-
-
 
 pub struct TargetParser{
     client: &'static Client,
@@ -62,9 +54,6 @@ impl TargetParser {
     }
 }
 
-
-
-
 async fn target_parse(client: &Client, target: Target, sender: mpsc::Sender<Video>) {
     match target {
         VIDEO(video) => {
@@ -74,11 +63,7 @@ async fn target_parse(client: &Client, target: Target, sender: mpsc::Sender<Vide
             proc_live();
         }
     }
-    //println!("{:?}", target);
 }
-
-
-
 
 async fn proc_video(client: &Client, mut video:Video, sender: mpsc::Sender<Video>) {
     let mut url = Url::parse("https://api.bilibili.com/x/web-interface/view").expect("Failed to parse URL");
@@ -124,7 +109,6 @@ async fn proc_video(client: &Client, mut video:Video, sender: mpsc::Sender<Video
         }
     }
 }
-
 
 fn proc_live(){
     todo!();

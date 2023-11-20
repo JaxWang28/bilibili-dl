@@ -17,7 +17,6 @@ use crate::multimedia_processor::MultimediaProcessor;
 
 pub struct CommandParser{
     sender: mpsc::Sender<Target>,
-
 }
 
 impl CommandParser {
@@ -77,6 +76,30 @@ pub enum Commands {
     }
 }
 
+
+
+async fn download(sender: mpsc::Sender<Target>, targets: Vec<String> /* others */) {
+    for target in targets {
+        task::spawn(preproc_target(sender.clone(), target));
+    }
+}
+
+async fn preproc_target(sender: mpsc::Sender<Target>, target: String /* others */){
+    /* TODO: */
+    sender.send(Target::VIDEO(
+            Video {
+                aid: None,
+                bvid: Some(target), 
+                cid: None,
+                flags: None,
+                title: None,
+                page_range: (1, 1),
+                page_id: None,
+            })).await.unwrap();
+}
+
+
+
 /* TODO: 优化*/
 async fn login() {
     let cookie_store = reqwest_cookie_store::CookieStore::new(None);
@@ -135,28 +158,3 @@ async fn login() {
       store.save_json(&mut writer).unwrap();
     }
 }
-
-
-async fn download(sender: mpsc::Sender<Target>, targets: Vec<String> /* others */) {
-    for target in targets {
-        task::spawn(preproc_target(sender.clone(), target));
-    }
-}
-
-async fn preproc_target(sender: mpsc::Sender<Target>, target: String /* others */){
-    /* TODO: */
-    sender.send(Target::VIDEO(
-            Video {
-                aid: None,
-                bvid: Some(target), 
-                cid: None,
-                flags: None,
-                title: None,
-                page_range: (1, 1),
-                page_id: None,
-
-            })).await.unwrap();
-}
-
-
-

@@ -28,26 +28,19 @@ Example
 bilibili-dl download 'https://www.bilibili.com/video/BV1Rw411h7Zv/?spm_id_from=333.1007.tianma.1-1-1.click&vd_source=5c7fcb1d3e2bfeeeecab12c6647acacb'
 ```
 
-# Plan
-* 分 p 下载
-* 多线程下载
-* 选择清晰度
-* 登录方式添加
-* cookies 有效检查
-
-
-
-
-# notes
-* 可以考虑使用 enum 在 channel 传递，以来区分不同数据类型
-
-
+# NextPlan
+* 输入的 target : 支持 aid; url自动解析 ...
+* 长视频异步分片下载
+* LIVE 直播流下载
+* 加入日志模块
+* 加入进度显示模块
+* 字幕弹幕封面下载
+* 指定下载类型下载
+* 执行清晰度下载
 
 
 # 框架
 ![bilibili-dl](https://github.com/jw-jackson/bilibili-dl/assets/52764058/5fac41e7-30c4-4359-b491-fb2342b59457)
-
-
 
 # 可以做什么
 * 视频/音频/字幕/弹幕/封面下载
